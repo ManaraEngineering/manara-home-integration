@@ -1,0 +1,4 @@
+# Pinned to versions verified locally on 2026-10-27 (homeassistant 2026.10.4, Python 3.14).
+pytest-homeassistant-custom-component==0.13.375
+ruff==0.17.3
+mypy==2.4.0

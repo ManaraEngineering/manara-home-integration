@@ -1,0 +1,13 @@
+{
+  "domain": "manara_home",
+  "name": "Manara Home",
+  "codeowners": ["@ManaraEngineering"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/ManaraEngineering/manara-home-integration",
+  "integration_type": "service",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/ManaraEngineering/manara-home-integration/issues",
+  "requirements": [],
+  "version": "0.0.1"
+}

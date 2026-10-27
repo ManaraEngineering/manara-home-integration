@@ -1,0 +1,22 @@
+# Secrets: never commit
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.yaml
+secrets/
+
+# Tooling
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
