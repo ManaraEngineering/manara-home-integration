@@ -49,7 +49,9 @@ def main() -> int:
     for schema in sorted(src.glob("*.json")):
         shutil.copy2(schema, DEST / schema.name)
         print(f"copied {schema.name}")
-    (DEST / "VERSION").write_text(f"ManaraEngineering/manara-platform@{sha}\n")
+    (DEST / "VERSION").write_text(
+        f"ManaraEngineering/manara-platform@{sha}\n", newline="\n"
+    )
     print(f"pinned to {sha}")
     return 0
 
