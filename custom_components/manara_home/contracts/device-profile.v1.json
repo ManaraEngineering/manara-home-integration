@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manara.co.in/contracts/device-profile.v1.json",
+  "title": "Manara device profile",
+  "description": "How a class of enrolled device behaves: what it shows by default, whether it runs as a kiosk, and which dashboards a TV offers. Served by manara_home and applied by the Manara Home app. See ADR 0003 and ADR 0004.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "version", "class", "default_view", "kiosk"],
+  "properties": {
+    "schema": {
+      "const": "manara.device-profile/v1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "display_name": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "class": {
+      "description": "Device class. tv requires the tv app flavour.",
+      "enum": ["phone", "tablet", "wall_panel", "tv"]
+    },
+    "tier": {
+      "description": "Platform tier (ADR 0001). TODO(verify): whether this belongs in the profile or only at site level.",
+      "enum": ["operator", "residential"]
+    },
+    "default_view": {
+      "description": "HA dashboard path the app opens at launch, for example /lovelace/home.",
+      "type": "string",
+      "pattern": "^/[A-Za-z0-9/_-]*$"
+    },
+    "kiosk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled"],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "hide_navigation": {
+          "description": "Hide the HA sidebar and header.",
+          "type": "boolean",
+          "default": true
+        },
+        "keep_screen_on": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "tv_dashboards": {
+      "description": "Dashboards a TV can switch between. manara_home opens them through manara://navigate/<path> over ADB.",
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "path"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^/[A-Za-z0-9/_-]*$"
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "class": { "const": "tv" } },
+        "required": ["class"]
+      },
+      "then": {
+        "required": ["tv_dashboards"],
+        "properties": { "tv_dashboards": { "minItems": 1 } }
+      },
+      "else": {
+        "not": { "required": ["tv_dashboards"] }
+      }
+    }
+  ]
+}

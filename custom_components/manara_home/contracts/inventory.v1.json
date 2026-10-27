@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manara.co.in/contracts/inventory.v1.json",
+  "title": "Manara site inventory payload",
+  "description": "Pushed from a site to ingest.manara.co.in. Hardware identifiers only: no user-chosen names, IP addresses, owner names or locations. See ADR 0002 and ADR 0008.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "site_id", "collected_at", "items"],
+  "properties": {
+    "schema": {
+      "const": "manara.inventory/v1"
+    },
+    "site_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,30}[a-z0-9])?$"
+    },
+    "collected_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": { "$ref": "#/$defs/item" }
+    }
+  },
+  "$defs": {
+    "ident": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "kind"],
+      "properties": {
+        "ref": {
+          "description": "Opaque, stable reference generated on site. Not a hostname or user-chosen name.",
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "kind": {
+          "description": "TODO(verify): whether client phones (kind client_device) belong in inventory at all, since they are personal devices.",
+          "enum": ["host", "client_device", "tv", "network", "zigbee_coordinator", "peripheral"]
+        },
+        "manufacturer": { "$ref": "#/$defs/ident" },
+        "model": { "$ref": "#/$defs/ident" },
+        "serial": { "$ref": "#/$defs/ident" },
+        "firmware_version": { "$ref": "#/$defs/ident" },
+        "os": { "$ref": "#/$defs/ident" },
+        "os_version": { "$ref": "#/$defs/ident" },
+        "cpu_model": { "$ref": "#/$defs/ident" },
+        "memory_mb": { "type": "integer", "minimum": 0 },
+        "storage_gb": { "type": "integer", "minimum": 0 },
+        "mac": {
+          "description": "TODO(verify): whether MAC addresses are allowed under client consent terms.",
+          "type": "string",
+          "pattern": "^([0-9a-f]{2}:){5}[0-9a-f]{2}$"
+        },
+        "app_version": {
+          "description": "Manara Home app version, for client_device and tv only.",
+          "$ref": "#/$defs/ident"
+        }
+      }
+    }
+  }
+}

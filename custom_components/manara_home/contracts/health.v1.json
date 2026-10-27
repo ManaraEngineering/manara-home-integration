@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manara.co.in/contracts/health.v1.json",
+  "title": "Manara site health payload",
+  "description": "Pushed from a site to ingest.manara.co.in. Holds ONLY the metrics in docs/privacy/metric-allowlist.md; every object rejects unknown fields. Changing this schema needs a new version and a PR labelled privacy. See ADR 0002 and ADR 0008.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "site_id", "source", "collected_at", "groups"],
+  "properties": {
+    "schema": {
+      "const": "manara.health/v1"
+    },
+    "site_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,30}[a-z0-9])?$"
+    },
+    "source": {
+      "enum": ["ha_integration", "collector_linux", "collector_windows"]
+    },
+    "host_ref": {
+      "description": "Opaque host reference matching inventory.v1 item ref. Not a hostname.",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+    },
+    "collected_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "groups": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "host": { "$ref": "#/$defs/host" },
+        "home_assistant": { "$ref": "#/$defs/home_assistant" },
+        "connectivity": { "$ref": "#/$defs/connectivity" },
+        "fleet": { "$ref": "#/$defs/fleet" },
+        "buffer": { "$ref": "#/$defs/buffer" },
+        "support": { "$ref": "#/$defs/support" }
+      }
+    }
+  },
+  "$defs": {
+    "percent": { "type": "number", "minimum": 0, "maximum": 100 },
+    "count": { "type": "integer", "minimum": 0 },
+    "version": { "type": "string", "maxLength": 32, "pattern": "^[0-9A-Za-z.+-]+$" },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cpu_percent": { "$ref": "#/$defs/percent" },
+        "memory_percent": { "$ref": "#/$defs/percent" },
+        "disk_percent": { "$ref": "#/$defs/percent" },
+        "uptime_s": { "$ref": "#/$defs/count" },
+        "load_1m": { "type": "number", "minimum": 0 },
+        "cpu_temp_c": { "type": "number", "minimum": -40, "maximum": 150 }
+      }
+    },
+    "home_assistant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": { "$ref": "#/$defs/version" },
+        "integration_count": { "$ref": "#/$defs/count" },
+        "entity_count": { "$ref": "#/$defs/count" },
+        "unavailable_entity_count": { "$ref": "#/$defs/count" },
+        "last_backup_age_s": { "$ref": "#/$defs/count" },
+        "manara_home_version": { "$ref": "#/$defs/version" }
+      }
+    },
+    "connectivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tunnel_connected": { "type": "boolean" },
+        "ingest_rtt_ms": { "$ref": "#/$defs/count" },
+        "wan_up": { "type": "boolean" }
+      }
+    },
+    "fleet": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enrolled_count": { "$ref": "#/$defs/count" },
+        "online_count": { "$ref": "#/$defs/count" },
+        "cert_expiring_30d_count": { "$ref": "#/$defs/count" },
+        "app_versions": {
+          "type": "object",
+          "maxProperties": 50,
+          "propertyNames": { "$ref": "#/$defs/version" },
+          "additionalProperties": { "$ref": "#/$defs/count" }
+        }
+      }
+    },
+    "buffer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "queued_payloads": { "$ref": "#/$defs/count" },
+        "oldest_queued_age_s": { "$ref": "#/$defs/count" }
+      }
+    },
+    "support": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maintainer_enabled"],
+      "properties": {
+        "maintainer_enabled": { "type": "boolean" },
+        "maintainer_expires_at": { "type": "string", "format": "date-time" }
+      },
+      "if": { "properties": { "maintainer_enabled": { "const": true } } },
+      "then": { "required": ["maintainer_expires_at"] },
+      "else": { "not": { "required": ["maintainer_expires_at"] } }
+    }
+  }
+}

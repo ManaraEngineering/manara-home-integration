@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manara.co.in/contracts/enrolment-qr.v1.json",
+  "title": "Manara enrolment QR payload",
+  "description": "Encoded in the QR code that manara_home shows when enrolling a device. Holds only what the app needs to start enrolment. It must never hold a certificate, private key, HA token or password. See ADR 0005 and ADR 0006.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "site_id", "ha_url", "enrol_url", "device_profile", "one_time_code", "expires_at"],
+  "properties": {
+    "schema": {
+      "const": "manara.enrolment-qr/v1"
+    },
+    "site_id": {
+      "description": "Stable site slug; also the subdomain in ha.<site_id>.manara.co.in.",
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,30}[a-z0-9])?$"
+    },
+    "site_name": {
+      "description": "Display name shown in the app during enrolment.",
+      "type": "string",
+      "maxLength": 64
+    },
+    "ha_url": {
+      "description": "Remote HA URL behind the site's Cloudflare Tunnel; requires mTLS.",
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://ha\\.[a-z0-9-]+\\.manara\\.co\\.in/?$"
+    },
+    "ha_local_url": {
+      "description": "Optional LAN URL for HA at the site.",
+      "type": "string",
+      "format": "uri"
+    },
+    "enrol_url": {
+      "description": "Where the app posts its CSR and one-time code. TODO(verify): LAN address or an mTLS-exempt hostname, because the device has no client certificate yet.",
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "device_profile": {
+      "description": "Reference to a device profile (device-profile.v1). The app fetches the full profile after enrolment.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "one_time_code": {
+      "description": "Single-use enrolment code, valid until expires_at. TODO(verify): length and alphabet; 16 base32 characters is assumed here.",
+      "type": "string",
+      "pattern": "^[A-Z2-7]{16}$"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "description": "TODO(verify): default lifetime; 10 minutes is assumed.",
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

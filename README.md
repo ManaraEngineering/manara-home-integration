@@ -16,7 +16,17 @@ The `manara_home` Home Assistant custom integration, installed through HACS. It 
 | Publishing | Push allowlisted health and inventory to `ingest.manara.co.in`, buffered when the hub is down | [ADR 0008](https://github.com/ManaraEngineering/manara-platform/blob/develop/docs/adr/0008-telemetry.md) |
 | Maintainer switch | 24-hour support access, logged and notified | [ADR 0009](https://github.com/ManaraEngineering/manara-platform/blob/develop/docs/adr/0009-support-access.md) |
 
-Data shapes come from the platform [contracts](https://github.com/ManaraEngineering/manara-platform/tree/develop/contracts).
+## Contracts
+
+Data shapes come from the platform [contracts](https://github.com/ManaraEngineering/manara-platform/tree/develop/contracts). A pinned copy is vendored in [custom_components/manara_home/contracts/](custom_components/manara_home/contracts/), so it ships through HACS and can enforce the health allowlist on site. [VERSION](custom_components/manara_home/contracts/VERSION) records the platform commit.
+
+Never edit the vendored files. Change them in `manara-platform`, then run:
+
+```sh
+python scripts/sync_contracts.py ../manara-platform
+```
+
+TODO: a CI check that the vendored copy matches the pinned platform commit. It needs a token that can read the private platform repo.
 
 ## Install (HACS, private repo)
 
