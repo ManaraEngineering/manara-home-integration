@@ -28,9 +28,11 @@ python scripts/sync_contracts.py ../manara-platform
 
 TODO: a CI check that the vendored copy matches the pinned platform commit. It needs a token that can read the private platform repo.
 
-## Install (HACS, private repo)
+## Install (HACS)
 
-TODO: document adding this private repository to HACS with a GitHub token, or the alternative distribution chosen.
+In HACS, open the menu → **Custom repositories**, add `https://github.com/ManaraEngineering/manara-home-integration` with type **Integration**, then install **Manara Home** and restart Home Assistant.
+
+TODO: if the repo goes private after the MVP, HACS needs a GitHub token with access to it, or another distribution route.
 
 ## Develop
 
@@ -48,4 +50,4 @@ Install the hooks with `pre-commit install`. In an IDE, open `manara-platform/ma
 
 `develop` is the default branch and all work lands there by PR. `main` is stable.
 
-TODO: protect `main` once the account is on GitHub Pro; GitHub Free does not allow branch protection on private repos.
+`main` is protected: it requires a PR, and the `lint`, `test`, `hassfest`, `hacs` and `secrets` checks must pass.
