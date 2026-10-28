@@ -39,6 +39,8 @@ jobs:
       - uses: home-assistant/actions/hassfest@master
 
   hacs:
+    # hacs/action refuses private repos; this job runs once the repo is public.
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     steps:
       - uses: hacs/action@main
