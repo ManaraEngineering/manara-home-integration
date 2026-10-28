@@ -37,11 +37,12 @@ TODO: document adding this private repository to HACS with a GitHub token, or th
 Home Assistant does not support Windows, so run tests on Linux, macOS or WSL.
 
 ```sh
-python3.14 -m venv .venv && . .venv/bin/activate
-pip install -r requirements_test.txt pre-commit
-pre-commit install
-ruff check . && mypy custom_components && pytest
+uv venv -p 3.14 ~/.venvs/manara-home-integration
+VIRTUAL_ENV=~/.venvs/manara-home-integration uv pip install -r requirements_test.txt
+bash scripts/check.sh                 # from Windows: wsl -e bash scripts/check.sh
 ```
+
+Install the hooks with `pre-commit install`. In an IDE, open `manara-platform/manara.code-workspace` for all repos together, with tasks for these checks.
 
 ## Branching
 
