@@ -46,8 +46,9 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
-          # Private repo has no brands entry yet. TODO: drop once added to home-assistant/brands or the repo goes public.
-          ignore: brands
+          # brands: no entry in home-assistant/brands yet.
+          # license: the integration is proprietary, so HACS can't identify an SPDX licence.
+          ignore: brands license
 
   secrets:
     runs-on: ubuntu-latest
